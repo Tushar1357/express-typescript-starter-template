@@ -1,32 +1,66 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
+import { config } from '../config/config';
 import { ApiResponse } from '../utils/apiResponse';
-import { asyncErrorHandler } from '../utils/asyncErrorHandler';
 
-export const getHealth = asyncErrorHandler(async (req: Request, res: Response) => {
-  const healthData = {
-    status: 'healthy',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    memory: {
-      used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
-      total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
-    },
+export class HealthController {
+  public getHealth = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const healthData = {
+        status: 'healthy',
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString(),
+        environment: config.env,
+        memory: {
+          used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+          total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+          unit: 'MB',
+        },
+      };
+
+      ApiResponse.success(res, healthData, 'Service is healthy');
+    } catch (error) {
+      next(error);
+    }
   };
 
-  return ApiResponse.success(res, healthData, 'Service is healthy');
-});
+  /**
+   * Readiness probe - indicates if the application is ready to accept traffic
+   */
+  public getReadiness = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const isReady = true;
 
-export const getReadiness = asyncErrorHandler(async (req: Request, res: Response) => {
-  const isReady = true;
+      if (!isReady) {
+        return ApiResponse.error(res, 'Service not ready', StatusCodes.SERVICE_UNAVAILABLE);
+      }
 
-  if (!isReady) {
-    return ApiResponse.error(res, 'Service not ready', StatusCodes.SERVICE_UNAVAILABLE);
-  }
+      ApiResponse.success(res, { ready: true }, 'Service is ready');
+    } catch (error) {
+      next(error);
+    }
+  };
 
-  return ApiResponse.success(res, { ready: true }, 'Service is ready');
-});
-
-export const getLiveness = asyncErrorHandler(async (req: Request, res: Response) => {
-  return ApiResponse.success(res, { alive: true }, 'Service is alive');
-});
+  /**
+   * Liveness probe - indicates if the application is alive
+   */
+  public getLiveness = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      ApiResponse.success(res, { alive: true }, 'Service is alive');
+    } catch (error) {
+      next(error);
+    }
+  };
+}

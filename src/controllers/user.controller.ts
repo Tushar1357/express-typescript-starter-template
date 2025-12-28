@@ -10,61 +10,63 @@ let users = [
   { id: '2', name: 'Jane Smith', email: 'jane@example.com', age: 25 },
 ];
 
-export const getAllUsers = asyncErrorHandler(async (req: Request, res: Response) => {
-  return ApiResponse.success(res, users, 'Users retrieved successfully');
-});
+export class UserController {
+  public getAllUsers = asyncErrorHandler(async (req: Request, res: Response) => {
+    return ApiResponse.success(res, users, 'Users retrieved successfully');
+  });
 
-export const getUserById = asyncErrorHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const user = users.find(u => u.id === id);
+  public getUserById = asyncErrorHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const user = users.find(u => u.id === id);
 
-  if (!user) {
-    throw new AppError('User not found', StatusCodes.NOT_FOUND);
-  }
+    if (!user) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
 
-  return ApiResponse.success(res, user, 'User retrieved successfully');
-});
+    return ApiResponse.success(res, user, 'User retrieved successfully');
+  });
 
-export const createUser = asyncErrorHandler(async (req: Request, res: Response) => {
-  const { name, email, age } = req.body;
+  public createUser = asyncErrorHandler(async (req: Request, res: Response) => {
+    const { name, email, age } = req.body;
 
-  const newUser = {
-    id: String(users.length + 1),
-    name,
-    email,
-    age,
-  };
+    const newUser = {
+      id: String(users.length + 1),
+      name,
+      email,
+      age,
+    };
 
-  users.push(newUser);
+    users.push(newUser);
 
-  return ApiResponse.created(res, newUser, 'User created successfully');
-});
+    return ApiResponse.created(res, newUser, 'User created successfully');
+  });
 
-export const updateUser = asyncErrorHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const updates = req.body;
+  public updateUser = asyncErrorHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const updates = req.body;
 
-  const userIndex = users.findIndex(u => u.id === id);
+    const userIndex = users.findIndex(u => u.id === id);
 
-  if (userIndex === -1) {
-    throw new AppError('User not found', StatusCodes.NOT_FOUND);
-  }
+    if (userIndex === -1) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
 
-  users[userIndex] = { ...users[userIndex], ...updates };
+    users[userIndex] = { ...users[userIndex], ...updates };
 
-  return ApiResponse.success(res, users[userIndex], 'User updated successfully');
-});
+    return ApiResponse.success(res, users[userIndex], 'User updated successfully');
+  });
 
-export const deleteUser = asyncErrorHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  public deleteUser = asyncErrorHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
 
-  const userIndex = users.findIndex(u => u.id === id);
+    const userIndex = users.findIndex(u => u.id === id);
 
-  if (userIndex === -1) {
-    throw new AppError('User not found', StatusCodes.NOT_FOUND);
-  }
+    if (userIndex === -1) {
+      throw new AppError('User not found', StatusCodes.NOT_FOUND);
+    }
 
-  users = users.filter(u => u.id !== id);
+    users = users.filter(u => u.id !== id);
 
-  return ApiResponse.noContent(res);
-});
+    return ApiResponse.noContent(res);
+  });
+}
