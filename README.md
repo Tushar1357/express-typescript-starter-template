@@ -68,7 +68,7 @@ express-typescript-starter/
 
 1. Clone or download this template:
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/Tushar1357/express-typescript-starter-template.git
    cd express-typescript-starter
    ```
 
