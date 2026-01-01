@@ -40,7 +40,8 @@ export class HealthController {
       const isReady = true;
 
       if (!isReady) {
-        return ApiResponse.error(res, 'Service not ready', StatusCodes.SERVICE_UNAVAILABLE);
+        ApiResponse.error(res, 'Service not ready', StatusCodes.SERVICE_UNAVAILABLE);
+        return;
       }
 
       ApiResponse.success(res, { ready: true }, 'Service is ready');

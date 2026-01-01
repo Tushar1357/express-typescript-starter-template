@@ -29,7 +29,7 @@ class Server {
   public async close(): Promise<void> {
     if (this.httpServer) {
       return new Promise((resolve, reject) => {
-        this.httpServer?.close((err: Error) => {
+        this.httpServer?.close((err: Error | unknown) => {
           if (err) {
             reject(err);
           } else {
