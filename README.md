@@ -51,6 +51,8 @@ express-typescript-starter/
 │   └── server.ts            # Server entry point
 ├── .env.example             # Example environment variables
 ├── .gitignore
+├── Dockerfile               # Multi-stage Docker build
+├── compose.yaml             # Docker Compose configuration
 ├── eslint.config.mts        # ESLint configuration
 ├── package.json
 ├── tsconfig.json            # TypeScript configuration
@@ -222,7 +224,68 @@ router.use('/blog', blogRoutes);
 
 ## 🐳 Docker Support
 
-*(Docker files will be added soon.)*
+This project includes a production-ready multi-stage Dockerfile and Docker Compose configuration.
+
+### Prerequisites
+
+- Docker (v20.10 or higher recommended)
+- Docker Compose v2
+
+### Docker Commands
+
+**Start the application:**
+```bash
+npm run docker:start
+```
+
+**Stop the application:**
+```bash
+npm run docker:stop
+```
+
+**Restart the application:**
+```bash
+npm run docker:restart
+```
+
+Your application will be available at http://localhost:3000.
+
+### Multi-Stage Build
+
+The Dockerfile uses a multi-stage build for optimal image size:
+
+1. **deps** - Installs production dependencies only
+2. **build** - Installs all dependencies and builds TypeScript
+3. **final** - Minimal runtime image with only production dependencies and compiled code
+
+### Deploying to Cloud
+
+1. Build for your target platform:
+   ```bash
+   # For amd64 (most cloud providers)
+   docker build --platform=linux/amd64 -t myapp .
+   ```
+
+2. Tag and push to your registry:
+   ```bash
+   docker tag myapp myregistry.com/myapp:latest
+   docker push myregistry.com/myapp:latest
+   ```
+
+### Adding Database Services
+
+The `compose.yaml` includes a commented PostgreSQL example. Uncomment and configure as needed:
+
+```yaml
+services:
+  server:
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: postgres
+    # ... see compose.yaml for full configuration
+```
 
 ## 🧪 Testing
 
